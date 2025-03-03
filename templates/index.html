@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI-Powered Skin Disease Classification</title>
+    <style>
+        /* ----- Animated Gradient Background ----- */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            /* Create a four-color gradient that shifts over time */
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+
+            /* Center everything */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Keyframes for the gradient animation */
+        @keyframes gradientBG {
+            0%   { background-position: 0%   50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0%   50%; }
+        }
+
+        /* ----- Container Styles ----- */
+        .container {
+            background: rgba(255, 255, 255, 0.85); /* Slightly transparent white */
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        /* ----- File Input & Button ----- */
+        .file-input {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #555;
+        }
+
+        /* ----- Result Text ----- */
+        #result {
+            margin-top: 1.5rem;
+            font-weight: bold;
+            color: #222;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI-Powered Skin Disease Classification</h1>
+
+        <!-- Upload Form -->
+        <form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data">
+            <input 
+                class="file-input" 
+                type="file" 
+                name="image" 
+                accept="image/*" 
+                required 
+            />
+            <br />
+            <button class="btn" type="submit">Upload &amp; Classify</button>
+        </form>
+
+        <!-- Display Classification Result -->
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Stop form from reloading the page
+            resultDiv.textContent = 'Classifying...';
+
+            const formData = new FormData(form);
+            try {
+                // Send file to /upload endpoint
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.error) {
+                    resultDiv.textContent = 'Error: ' + data.error;
+                } else {
+                    // If your Flask code returns { "classification": <some_value> }
+                    resultDiv.textContent = 'Classification: ' + JSON.stringify(data.classification);
+                }
+            } catch (error) {
+                console.error(error);
+                resultDiv.textContent = 'An error occurred while classifying the image.';
+            }
+        });
+    </script>
+</body>
+</html>
